@@ -1,5 +1,8 @@
-import { DashboardPage } from './features/dashboard/index.js'
+import AppLayout from './app/layouts/AppLayout.jsx'
+import AppRouter from './app/router/index.jsx'
 
 export default function App() {
-  return <DashboardPage />
+  return (
+    <AppLayout><AppRouter /></AppLayout>
+  )
 }
