@@ -1,3 +1,5 @@
+import { apiRequest } from '../../../api/apiClient.js'
+
 const recipes = [
   { id: 1, name: 'Salad Bowl', category: 'Healthy', time: '12 min', image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=700&q=80', isFavorite: true, ownerId: 'community' },
   { id: 2, name: 'Pasta', category: 'Comfort', time: '18 min', image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=700&q=80', ownerId: 'community' },
@@ -8,7 +10,36 @@ const recipes = [
   { id: 7, name: 'Jane\'s Garden Pasta', category: 'Comfort', time: '25 min', image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=700&q=80', ownerId: 'jane', isFavorite: false },
 ]
 
+function normalizeRecipe(recipe, ownerId = 'community') {
+  return {
+    id: String(recipe.id),
+    name: recipe.title || recipe.name,
+    title: recipe.title || recipe.name,
+    description: recipe.description || '',
+    ingredients: recipe.ingredients || [],
+    category: recipe.category || 'Filipino',
+    time: recipe.time || '—',
+    image: recipe.image || 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80',
+    ownerId: recipe.owner_id || recipe.ownerId || ownerId,
+    isFavorite: recipe.isFavorite || false,
+    createdAt: recipe.created_at || recipe.createdAt,
+    updatedAt: recipe.updated_at || recipe.updatedAt,
+  }
+}
+
 export const recipeService = {
+  async fetchAll() {
+    const response = await apiRequest('/recipes/')
+    const remoteData = Array.isArray(response.data) ? response.data : []
+    if (remoteData.length === 0) {
+      recipes.length = 0
+      return []
+    }
+
+    const remoteRecipes = remoteData.map((recipe) => normalizeRecipe(recipe))
+    recipes.splice(0, recipes.length, ...remoteRecipes)
+    return recipes
+  },
   getAll() {
     return recipes
   },
@@ -20,15 +51,39 @@ export const recipeService = {
     if (recipe) recipe.isFavorite = !recipe.isFavorite
     return recipe
   },
-  add(recipe, ownerId) {
-    const newRecipe = { ...recipe, id: Date.now(), ownerId, isFavorite: false }
+  async add(recipe, ownerId) {
+    const response = await apiRequest('/recipes/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: recipe.name,
+        description: recipe.description,
+        ingredients: recipe.ingredients,
+        category: recipe.category,
+        time: recipe.time,
+        image: recipe.image,
+        ownerId,
+      }),
+    })
+    const newRecipe = normalizeRecipe(response.data, ownerId)
     recipes.push(newRecipe)
     return newRecipe
   },
-  update(id, changes, ownerId) {
+  async update(id, changes, ownerId) {
     const recipe = recipes.find((item) => item.id === id)
     if (!recipe || recipe.ownerId !== ownerId) return null
-    Object.assign(recipe, changes)
+    const response = await apiRequest(`/recipes/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        title: changes.name,
+        description: changes.description,
+        ingredients: changes.ingredients,
+        category: changes.category,
+        time: changes.time,
+        image: changes.image,
+        ownerId,
+      }),
+    })
+    Object.assign(recipe, normalizeRecipe(response.data, ownerId))
     return recipe
   },
   remove(id, ownerId) {

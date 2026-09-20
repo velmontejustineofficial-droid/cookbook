@@ -1,6 +1,6 @@
 import { FiClock, FiEdit2, FiHeart, FiTrash2 } from 'react-icons/fi'
 
-export default function RecipeCard({ recipe, onToggleFavorite, currentUserId, onEdit, onDelete }) {
+export default function RecipeCard({ recipe, onToggleFavorite, currentUserId, onEdit, onDelete, onView }) {
   const isOwner = recipe.ownerId === currentUserId
 
   return (
@@ -18,7 +18,7 @@ export default function RecipeCard({ recipe, onToggleFavorite, currentUserId, on
           </div>
           <button onClick={() => onToggleFavorite(recipe.id)} aria-label={`${recipe.isFavorite ? 'Remove' : 'Add'} ${recipe.name} ${recipe.isFavorite ? 'from' : 'to'} favorites`} className={['text-lg', recipe.isFavorite ? 'text-[#d7652b]' : 'text-[#b9a995]'].join(' ')}><FiHeart aria-hidden="true" fill={recipe.isFavorite ? 'currentColor' : 'none'} /></button>
         </div>
-        <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#756b5d]"><span className="flex items-center gap-1"><FiClock aria-hidden="true" />Quick and easy</span>{isOwner && <span className="flex items-center gap-1"><button onClick={() => onEdit(recipe.id)} aria-label={`Edit ${recipe.name}`} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f1e4cd] text-[#315640]"><FiEdit2 aria-hidden="true" /></button><button onClick={() => onDelete(recipe.id)} aria-label={`Delete ${recipe.name}`} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f8e1d6] text-[#b94a2c]"><FiTrash2 aria-hidden="true" /></button></span>}</div>
+        <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#756b5d]"><button onClick={() => onView(recipe)} className="font-semibold text-[#3f6d4c]">View recipe</button>{isOwner ? <span className="flex items-center gap-1"><button onClick={() => onEdit(recipe.id)} aria-label={`Edit ${recipe.name}`} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f1e4cd] text-[#315640]"><FiEdit2 aria-hidden="true" /></button><button onClick={() => onDelete(recipe.id)} aria-label={`Delete ${recipe.name}`} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f8e1d6] text-[#b94a2c]"><FiTrash2 aria-hidden="true" /></button></span> : <span className="flex items-center gap-1"><FiClock aria-hidden="true" />Quick and easy</span>}</div>
       </div>
     </article>
   )
