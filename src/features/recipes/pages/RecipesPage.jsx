@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { FiArrowLeft, FiSearch } from 'react-icons/fi'
+import { FiSearch, FiSliders } from 'react-icons/fi'
 import RecipeList from '../components/RecipeList.jsx'
+import RecipeSectionHeader from '../components/RecipeSectionHeader.jsx'
 import useRecipes from '../hooks/useRecipes.js'
 import { recipeService } from '../services/recipeService.js'
 
-export default function RecipesPage({ onBack }) {
+export default function RecipesPage({ onBack, currentUserId, onEdit }) {
   const recipes = useRecipes()
   const categories = ['All', ...new Set(recipes.map((recipe) => recipe.category))]
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,16 +20,19 @@ export default function RecipesPage({ onBack }) {
     recipeService.toggleFavorite(id)
     refresh((value) => value + 1)
   }
+  const deleteRecipe = (id) => {
+    if (window.confirm('Delete this recipe?')) recipeService.remove(id, currentUserId)
+    refresh((value) => value + 1)
+  }
 
   return (
     <div className="w-full rounded-[28px] border border-[#eadfcd] bg-[#fffaf1] p-4 shadow-sm">
-      <button onClick={onBack} className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#d6c7ae] bg-[#f3e5cd] px-3 py-2 text-sm font-medium text-[#315640]"><FiArrowLeft aria-hidden="true" />Back</button>
-      <div className="flex items-end justify-between gap-3"><div><h1 className="text-2xl font-black tracking-[-0.05em] text-[#2b241c]">All recipes</h1><p className="mt-2 text-sm text-[#756b5d]">Find something delicious to make.</p></div><span className="text-xs font-semibold text-[#3f6d4c]">{filteredRecipes.length} recipes</span></div>
-      <div className="mt-5 space-y-3">
-        <label className="flex items-center gap-2 rounded-full border border-[#e5dccb] bg-[#f3eee3] px-3 py-2.5 text-[#294c39]"><FiSearch aria-hidden="true" /><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search recipes" className="w-full border-0 bg-transparent text-sm text-[#302d28] placeholder:text-[#887e70] focus:outline-none" /></label>
-        <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} className="w-full rounded-full border border-[#d6c7ae] bg-[#f3e5cd] px-3 py-2 text-sm text-[#315640] outline-none">{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
+      <RecipeSectionHeader onBack={onBack} badge="Cookbook" eyebrow="Your collection" title="All recipes" description="Find something delicious to make." count={filteredRecipes.length} countLabel="recipes" />
+      <div className="mt-6 space-y-3">
+        <label className="flex items-center gap-2 rounded-2xl border border-[#e5dccb] bg-[#f3eee3] px-3 py-3 text-[#294c39]"><FiSearch aria-hidden="true" /><input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search recipes" className="w-full border-0 bg-transparent text-sm text-[#302d28] placeholder:text-[#887e70] focus:outline-none" /></label>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1"><FiSliders aria-hidden="true" className="shrink-0 text-[#56745a]" />{categories.map((category) => <button key={category} onClick={() => setSelectedCategory(category)} className={['shrink-0 rounded-full px-3 py-2 text-xs font-semibold transition', selectedCategory === category ? 'bg-[#214c37] text-white' : 'bg-[#f1e4cd] text-[#56745a]'].join(' ')}>{category}</button>)}</div>
       </div>
-      <div className="mt-5"><RecipeList recipes={filteredRecipes} onToggleFavorite={toggleFavorite} /></div>
+      <div className="mt-5"><RecipeList recipes={filteredRecipes} onToggleFavorite={toggleFavorite} currentUserId={currentUserId} onEdit={onEdit} onDelete={deleteRecipe} /></div>
     </div>
   )
 }

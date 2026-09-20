@@ -1,17 +1,16 @@
-import { FiBookOpen, FiHeart, FiHome, FiPlus, FiSettings } from 'react-icons/fi'
+import { FiBookOpen, FiHeart, FiHome } from 'react-icons/fi'
 
 const navItems = [
   { label: 'Home', icon: FiHome },
-  { label: 'Settings', icon: FiSettings },
+  { label: 'My Recipe', icon: FiBookOpen },
   { label: 'Recipe', icon: FiBookOpen },
   { label: 'Favorite', icon: FiHeart },
-  { label: 'Add Recipe', icon: FiPlus },
 ]
 
 export default function BottomNavigation({ activeTab, onTabChange }) {
   return (
     <nav className="sticky bottom-0 z-10 mt-auto w-full border-t border-[#d6c7ae] bg-[#214c37]/95 px-2 py-2 backdrop-blur-sm">
-      <div className="grid grid-cols-5 gap-1">
+      <div className="grid grid-cols-4 gap-1">
         {navItems.map((item) => {
           const isActive = activeTab === item.label
           const Icon = item.icon
