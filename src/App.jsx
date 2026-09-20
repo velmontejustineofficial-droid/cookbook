@@ -1,5 +1,5 @@
-import Dashboard from './features/dashboard/Dashboard.jsx'
+import { DashboardPage } from './features/dashboard/index.js'
 
 export default function App() {
-  return <Dashboard />
+  return <DashboardPage />
 }
