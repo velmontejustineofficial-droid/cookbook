@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import ProfilePage from '../../profile/pages/ProfilePage.jsx'
 import FavoritesPage from '../../recipes/pages/FavoritesPage.jsx'
 import RecipesPage from '../../recipes/pages/RecipesPage.jsx'
 import CreateRecipePage from '../../recipes/pages/CreateRecipePage.jsx'
