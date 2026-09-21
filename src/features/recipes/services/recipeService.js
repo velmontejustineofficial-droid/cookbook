@@ -83,12 +83,18 @@ export const recipeService = {
         ownerId,
       }),
     })
+    if (!response.data) return null
     Object.assign(recipe, normalizeRecipe(response.data, ownerId))
     return recipe
   },
-  remove(id, ownerId) {
+  async remove(id, ownerId) {
     const recipeIndex = recipes.findIndex((item) => item.id === id && item.ownerId === ownerId)
     if (recipeIndex === -1) return false
+
+    await apiRequest(`/recipes/delete/${id}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ ownerId }),
+    })
     recipes.splice(recipeIndex, 1)
     return true
   },

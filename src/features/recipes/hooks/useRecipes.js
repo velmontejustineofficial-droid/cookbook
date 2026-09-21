@@ -5,6 +5,18 @@ export default function useRecipes() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const reload = async () => {
+    setLoading(true)
+    try {
+      const loadedRecipes = await recipeService.fetchAll()
+      setRecipes([...loadedRecipes])
+    } catch {
+      setRecipes([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     let isActive = true
 
@@ -24,5 +36,5 @@ export default function useRecipes() {
     return () => { isActive = false }
   }, [])
 
-  return { recipes, loading }
+  return { recipes, loading, reload }
 }

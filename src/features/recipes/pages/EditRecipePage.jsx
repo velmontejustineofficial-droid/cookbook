@@ -25,7 +25,8 @@ export default function EditRecipePage({ recipeId, currentUserId, onBack }) {
       return
     }
     try {
-      await recipeService.update(recipeId, { ...form, name: form.name.trim(), time: form.time.trim() }, currentUserId)
+      const updatedRecipe = await recipeService.update(recipeId, { ...form, name: form.name.trim(), time: form.time.trim() }, currentUserId)
+      if (!updatedRecipe) throw new Error('Recipe was not updated')
       onBack()
     } catch {
       setError('Could not update recipe. Check the API and try again.')

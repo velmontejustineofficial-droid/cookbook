@@ -22,8 +22,9 @@ export default function RecipesPage({ onBack, currentUserId, onEdit }) {
     recipeService.toggleFavorite(id)
     refresh((value) => value + 1)
   }
-  const deleteRecipe = (id) => {
-    if (window.confirm('Delete this recipe?')) recipeService.remove(id, currentUserId)
+  const deleteRecipe = async (id) => {
+    if (!window.confirm('Delete this recipe?')) return
+    await recipeService.remove(id, currentUserId)
     refresh((value) => value + 1)
   }
 
